@@ -1,0 +1,4 @@
+#!/bin/sh
+# `keel example` runs this. Output is streamed back through keel's themed IO.
+echo "example plugin — project: ${KEEL_PROJECT_DIR:-.}"
+echo "framework: ${KEEL_FRAMEWORK:-unknown}, env: ${KEEL_ENV:-unknown}"

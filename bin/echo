@@ -1,0 +1,21 @@
+#!/bin/sh
+# The echo action — the target of keel.call("echo", {text}) from bin/page. keel
+# runs this with the page's args as key=value arguments and hands whatever JSON it
+# prints back to the page. A real plugin would do its work here (a scan, a fetch).
+#
+# NOTE for forkers: the value must be JSON-escaped before it goes into the string,
+# or a text containing " \ or a newline produces invalid JSON that keel's bridge
+# rejects. This does the minimal escape (backslash first, then double-quote, then
+# strip control chars) in pure sh. A plugin in a real language should emit JSON
+# with its standard library instead of hand-building it.
+text=""
+for a in "$@"; do
+  case "$a" in
+    text=*) text="${a#text=}" ;;
+  esac
+done
+
+# Escape \ then " (order matters), then drop control characters that are illegal
+# unescaped inside a JSON string.
+esc=$(printf '%s' "$text" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | tr -d '\000-\037')
+printf '{"echoed":"%s","by":"the example plugin (bin/echo)"}' "$esc"

@@ -1,0 +1,3 @@
+#!/bin/sh
+# A studio action. Input values (if any) arrive as key=value arguments.
+echo "example action ran against ${KEEL_PROJECT_DIR:-.} (args: $*)"

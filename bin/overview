@@ -1,0 +1,5 @@
+#!/bin/sh
+# Sections added to the project overview. Same View JSON as a screen.
+cat <<JSON
+{"sections":[{"kind":"stat","title":"Example plugin","items":[{"label":"status","value":"active"}]}]}
+JSON

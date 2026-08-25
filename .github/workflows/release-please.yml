@@ -1,0 +1,20 @@
+name: release-please
+
+# Auto-versioning from Conventional Commits. The reference plugin is not a Go
+# module (it is shell + data), so it uses the "simple" strategy: release-please
+# maintains a release PR whose merge tags the version and triggers release.yml.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          release-type: simple

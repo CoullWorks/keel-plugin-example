@@ -1,0 +1,38 @@
+name: release
+
+# The reference plugin ships no binary (it is plain shell), so a release is a
+# tarball of its files. release-please tags the version on merge of its release
+# PR, which triggers this.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The two component bundles the studio mounts (ui/dist/page.js + screen.js)
+      # are built from source, not committed, so build them before bundling — a
+      # released plugin must carry its UI, not just its shell scripts.
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: build UI components
+        working-directory: ui
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+          test -f dist/page.js && test -f dist/screen.js
+      - name: bundle the plugin
+        run: tar czf keel-plugin-example.tar.gz config bin recipes ui/dist README.md LICENSE
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: keel-plugin-example.tar.gz

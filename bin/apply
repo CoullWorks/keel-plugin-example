@@ -1,0 +1,19 @@
+#!/bin/sh
+# The wizard steps' apply. keel runs this with the chosen option keys as arguments
+# — from BOTH the single-select step (greeting) and the multi-select step
+# (readme, gitkeep) — so it handles whichever keys arrive. A real plugin would
+# scaffold config, add a dependency, etc. Here it just writes marker files.
+dir="${KEEL_PROJECT_DIR:-.}"
+did=""
+for key in "$@"; do
+  case "$key" in
+    greeting) printf 'hello from the example plugin\n' > "$dir/HELLO.txt"; did="$did HELLO.txt" ;;
+    readme)   printf '# Example notes\n\nAdded by the example plugin wizard step.\n' > "$dir/EXAMPLE_NOTES.md"; did="$did EXAMPLE_NOTES.md" ;;
+    gitkeep)  : > "$dir/.keep"; did="$did .keep" ;;
+  esac
+done
+if [ -n "$did" ]; then
+  echo "wrote:$did"
+else
+  echo "nothing selected"
+fi

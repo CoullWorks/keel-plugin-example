@@ -1,0 +1,10 @@
+# The shell back end has nothing to build; keep it clean.
+*.log
+
+# ui/ is the React source for the two UI components. Its deps are not committed,
+# and neither are the BUILT bundles — keel serves ui/dist/*.js from disk, so you
+# build them locally with `cd ui && pnpm install && pnpm build`. A forker who
+# clones this repo runs that once; CI rebuilds them to prove they build.
+ui/node_modules/
+ui/.vite/
+ui/dist/

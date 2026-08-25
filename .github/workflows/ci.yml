@@ -1,0 +1,66 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: keel-plugin-example
+      # keel is a sibling so its binary can run the conformance check.
+      - uses: actions/checkout@v4
+        with:
+          repository: coullworks/keel
+          path: keel
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # lint — the executables keel runs must be sound shell.
+      - name: shellcheck
+        working-directory: keel-plugin-example
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y shellcheck
+          shellcheck bin/*
+
+      # build the two UI components — prove ui/dist/page.js + ui/dist/screen.js
+      # build from source. The bundles are NOT committed (keel serves them from
+      # disk); a forker runs the same two commands once after cloning.
+      - name: build UI components
+        working-directory: keel-plugin-example/ui
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+          test -f dist/page.js && test -f dist/screen.js
+          grep -q 'as mount' dist/page.js && grep -q 'as mount' dist/screen.js
+
+      # conformance — the plugin standard, release bar (docs/PLUGIN-STANDARD.md):
+      # register.yaml valid, every declared executable present + executable,
+      # LICENSE + README present.
+      - name: build keel
+        working-directory: keel
+        run: go build -o keel ./cmd/keel
+      - name: conformance (plugin standard, --strict)
+        run: keel/keel plugins test keel-plugin-example --strict
+
+      - name: validate register.yaml
+        working-directory: keel-plugin-example
+        run: |
+          python3 - <<'PY'
+          import yaml
+          m = yaml.safe_load(open("config/register.yaml"))
+          for f in ("schema", "name", "version", "description"):
+              assert m.get(f), f"register.yaml missing {f}"
+          assert m["schema"] == 1, "unsupported schema"
+          print("register.yaml OK:", m["name"], m["version"])
+          PY

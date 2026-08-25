@@ -1,0 +1,13 @@
+#!/bin/sh
+# A live studio screen. Print a View as JSON on stdout; keel draws it.
+cat <<JSON
+{"sections":[
+  {"kind":"stat","title":"This project","items":[
+    {"label":"Framework","value":"${KEEL_FRAMEWORK:-unknown}"},
+    {"label":"Environment","value":"${KEEL_ENV:-unknown}"}
+  ]},
+  {"kind":"text","title":"Live","items":[
+    {"label":"Where this came from","value":"bin/screen, run by keel with the project in the environment"}
+  ]}
+]}
+JSON

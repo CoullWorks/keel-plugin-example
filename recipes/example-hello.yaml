@@ -1,0 +1,13 @@
+# A recipe this plugin ships. A "pack" is a plugin that ships only recipes like
+# this; keel folds an enabled plugin's recipes/ directory into its catalogue.
+id: example-hello
+kind: extra
+label: Example greeting (demonstrates a plugin shipping a recipe)
+provides: [example-hello]
+files:
+  - path: EXAMPLE_PLUGIN.md
+    content: |
+      # Added by the example plugin
+
+      This file was written by the `example-hello` recipe, shipped in the example
+      plugin's recipes/ directory. Remove it once you have your own.

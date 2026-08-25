@@ -1,0 +1,27 @@
+{
+  "name": "example-ui",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "The example plugin's two teaching components — a global component PAGE and a project-scoped component SCREEN — each a self-contained React ES module the keel studio mounts.",
+  "scripts": {
+    "build": "EX_ENTRY=page vite build && EX_ENTRY=screen vite build",
+    "build:page": "EX_ENTRY=page vite build",
+    "build:screen": "EX_ENTRY=screen vite build"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.7",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
+  },
+  "packageManager": "pnpm@9.15.9",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

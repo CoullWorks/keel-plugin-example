@@ -1,0 +1,123 @@
+# The register file: keel finds a plugin by finding this, and reads its identity
+# WITHOUT running any of the plugin's code. Everything a plugin contributes is
+# declared here as DATA; the actual behaviour is in the executables named by
+# `run` / `render` / `apply` (which keel runs, once you trust the plugin, with the
+# project in the environment: KEEL_PROJECT_DIR / KEEL_FRAMEWORK / KEEL_ENV) and in
+# the built ES modules named by `component:` (which the keel STUDIO serves and
+# mounts as React — no iframe, no code loaded into keel itself).
+#
+# This is the reference plugin. It demonstrates EVERY extension point keel offers,
+# so you can fork it and delete what you don't need. The back end is deliberately
+# plain shell (bin/*) to make the point: a keel plugin can be written in ANY
+# language, because keel talks to it over a simple subprocess + JSON protocol and
+# never loads its code. The only JavaScript here is the two UI *components*
+# (ui/dist/*.js) — and even those are the plugin's own bundles, mounted as-is.
+schema: 1
+
+name: example
+version: 1.0.0
+description: The reference keel plugin — every extension point, ready to fork.
+author: CoullWorks
+license: MIT
+homepage: https://github.com/coullworks/keel-plugin-example
+
+# Powers beyond reading/writing project files. This plugin runs its own scripts,
+# so it declares exec; keel asks the user to grant it once (keel plugins trust).
+# A capability a plugin never declares can never be acquired.
+capabilities:
+  - exec
+
+# ── COMMAND ──────────────────────────────────────────────────────────────────
+# A CLI command: `keel example`. keel runs bin/hello with the user's args; its
+# stdout is streamed back through keel's themed IO.
+commands:
+  - name: example
+    summary: Report what the example plugin sees about this project
+    run: ["bin/hello"]
+
+# ── SCREENS (per-project surfaces in the studio) ─────────────────────────────
+screens:
+  # 1. STATIC screen — pure data in this file. No code runs to show it.
+  - id: example-screen-static
+    title: Example (static screen)
+    sections:
+      - kind: text
+        title: About
+        items:
+          - label: What this is
+            value: A studio screen declared entirely in register.yaml — no code runs.
+  # 2. LIVE screen — keel runs bin/screen and draws the View it prints as JSON.
+  - id: example-screen-live
+    title: Example (live screen)
+    render: ["bin/screen"]
+  # 3. COMPONENT screen — the studio serves ui/dist/screen.js and MOUNTS it as a
+  #    React component (no iframe). It exports mount(el, keel); keel threads the
+  #    focused project as keel.dir, and the component reaches its back end through
+  #    keel.call(...). Component takes precedence over render/sections when set.
+  - id: example-screen-component
+    title: Example (component screen)
+    component: ui/dist/screen.js
+
+# ── WIZARD STEPS (contributed to `keel new`) ─────────────────────────────────
+# The chosen option keys are passed to the step's apply executable as arguments.
+steps:
+  # A SINGLE-SELECT step (the default): the user picks one option.
+  - id: example-extras
+    title: Example extras
+    help: A single-select wizard step contributed by the example plugin.
+    options:
+      - key: greeting
+        label: Add a greeting file (HELLO.txt)
+    apply: ["bin/apply"]
+  # A MULTI-SELECT step: multi:true lets the user tick several options; all the
+  # chosen keys arrive as arguments to the same apply executable.
+  - id: example-flavours
+    title: Example flavours
+    help: A multi-select wizard step — tick any combination.
+    multi: true
+    options:
+      - key: readme
+        label: Add an EXAMPLE_NOTES.md
+      - key: gitkeep
+        label: Add a .keep file
+    apply: ["bin/apply"]
+
+# ── ACTIONS (studio buttons + the keel.call bridge target) ───────────────────
+actions:
+  # A studio action (a button). Input values (if any) arrive as key=value args.
+  - id: example-say-hi
+    label: Say hi
+    help: Runs the plugin's own executable against the project.
+    group: Plugins
+    needs: exec
+    run: ["bin/action"]
+  # The keel.call bridge target. Both UI components below invoke keel.call('echo',
+  # {text}); keel runs bin/echo (this plugin's OWN executable) and returns its JSON
+  # to the component. This is how a plugin's own UI reaches its own back end —
+  # keel only proxies the call; the work is in bin/echo.
+  - id: echo
+    label: Echo
+    help: Echoes text back to a component — demonstrates the keel.call bridge.
+    needs: exec
+    run: ["bin/echo"]
+
+# ── PAGES (top-level studio surfaces under "Extend", not per-project) ─────────
+pages:
+  # 1. COMPONENT page — the studio serves ui/dist/page.js and MOUNTS it as React
+  #    (no iframe). This is the modern own-UI tier: the plugin ships a self-
+  #    contained ES module exporting mount(el, keel); it is global (no project,
+  #    so keel.dir is undefined) and reaches its back end through keel.call.
+  - id: example
+    title: Example (component page)
+    icon: "◈"
+    component: ui/dist/page.js
+  # 2. DATA page — keel runs bin/page-data and draws the View JSON it prints,
+  #    exactly like a live screen but as a top-level page. No JavaScript at all.
+  - id: example-data
+    title: Example (data page)
+    icon: "▤"
+    render: ["bin/page-data"]
+
+# ── OVERVIEW (sections this plugin adds to a project's studio overview) ───────
+# keel runs bin/overview and folds the View JSON it prints into the overview.
+overview: ["bin/overview"]

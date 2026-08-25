@@ -1,0 +1,14 @@
+#!/bin/sh
+# A DATA page. keel runs this and draws the View JSON it prints on stdout — the
+# same protocol as a live screen, but as a top-level "Extend" page. No JavaScript
+# is involved: keel owns the rendering, so this page can never break the studio.
+# Compare ui/dist/page.js (the component-page tier, where the plugin ships its own
+# React) — this is the zero-JS alternative for a page that is just data.
+cat <<'JSON'
+{"sections":[
+  {"kind":"text","title":"Data page","items":[
+    {"label":"Rendered by","value":"bin/page-data (no JS)"},
+    {"label":"Tier","value":"data page — keel draws the View JSON this script prints"}
+  ]}
+]}
+JSON
