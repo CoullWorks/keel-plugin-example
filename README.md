@@ -9,6 +9,13 @@
   <a href="https://github.com/coullworks/keel">⚓ built for keel</a> · <a href="LICENSE">MIT</a>
 </p>
 
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT"></a>
+  <a href="https://github.com/coullworks/keel-plugin-example/releases/latest"><img src="https://img.shields.io/github/v/release/coullworks/keel-plugin-example?label=version&color=ff6a2c" alt="latest release"></a>
+  <a href="https://github.com/coullworks/keel-plugin-example/actions"><img src="https://img.shields.io/github/actions/workflow/status/coullworks/keel-plugin-example/ci.yml?label=CI" alt="CI"></a>
+  <a href="https://github.com/coullworks/keel"><img src="https://img.shields.io/badge/built%20for-keel-ff6a2c" alt="built for keel"></a>
+</p>
+
 ---
 
 The reference [keel](https://github.com/coullworks/keel) plugin. **Fork it to build your own.**
@@ -184,6 +191,18 @@ that turns a `plugin.Plugin` into a `keel-<name>` binary speaking this exact
 protocol — point `render`/`run` at it in `register.yaml`. (The sonar plugin does
 this.) See the keel docs.
 
+## Support
+
+This example is free and MIT, like keel itself. If it saved you an afternoon,
+you can sponsor the work at [github.com/sponsors/coullworks](https://github.com/sponsors/coullworks).
+
 ## License
 
 [MIT](LICENSE) © CoullWorks
+
+---
+
+<p align="center">
+  <a href="https://coullworks.com"><b>⚓ Powered by CoullWorks</b></a><br>
+  <sub>Built in the open by <a href="https://coullworks.com">CoullWorks</a> — web &amp; software engineering. <a href="https://coullworks.com">coullworks.com</a></sub>
+</p>
